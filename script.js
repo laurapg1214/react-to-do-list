@@ -20,7 +20,7 @@ var json = function json(response) {
   return response.json();
 };
 
-// construct class, initialise new_task, create empty tasks array
+// construct ToDoList component, initialise new_task, create empty tasks array
 
 var ToDoList = function (_React$Component) {
   _inherits(ToDoList, _React$Component);
@@ -41,7 +41,7 @@ var ToDoList = function (_React$Component) {
     return _this;
   }
 
-  // create function to fetch tasks once component mounts
+  // use componentDidMount lifecycle method to fetch tasks once component mounts
 
 
   _createClass(ToDoList, [{
@@ -51,7 +51,7 @@ var ToDoList = function (_React$Component) {
 
       fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191").then(checkStatus).then(json).then(function (response) {
         console.log(response);
-        // set state of tasks array to response return
+        // set state of tasks array to response data
         _this2.setState({ tasks: response.tasks });
       })
       // error catching
@@ -104,8 +104,8 @@ var ToDoList = function (_React$Component) {
             ),
             // use conditional operator
             tasks.length > 0 ? tasks.map(function (task) {
-              // for now, return nothing
-              return null;
+              // return task from Task component
+              return React.createElement(Task, { key: task.d, task: task });
             }) : React.createElement(
               'p',
               null,
@@ -134,6 +134,63 @@ var ToDoList = function (_React$Component) {
   }]);
 
   return ToDoList;
+}(React.Component);
+
+// construct Task component to use in ToDoList component to render tasks
+
+
+var Task = function (_React$Component2) {
+  _inherits(Task, _React$Component2);
+
+  function Task() {
+    _classCallCheck(this, Task);
+
+    return _possibleConstructorReturn(this, (Task.__proto__ || Object.getPrototypeOf(Task)).apply(this, arguments));
+  }
+
+  _createClass(Task, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          task = _props.task,
+          onDelete = _props.onDelete,
+          onComplete = _props.onComplete;
+      var id = task.id,
+          content = task.content,
+          completed = task.completed;
+
+      // return paragraph to render task content, delete button, and completion checkbox
+
+      return React.createElement(
+        'div',
+        { className: 'row mb-1' },
+        React.createElement(
+          'p',
+          { className: 'col' },
+          content
+        ),
+        React.createElement(
+          'button',
+          {
+            onClick: function onClick() {
+              return onDelete(id);
+            }
+          },
+          'Delete'
+        ),
+        React.createElement('input', {
+          className: 'd-inline-block mt-2',
+          type: 'checkbox',
+          onChange: function onChange() {
+            return onComplete(id, completed);
+          },
+          checked: completed
+        })
+      );
+    }
+  }]);
+
+  return Task;
 }(React.Component);
 
 // render into DOM
