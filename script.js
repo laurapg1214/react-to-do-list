@@ -38,29 +38,36 @@ var ToDoList = function (_React$Component) {
     // bind functions
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleSubmit = _this.handleSubmit.bind(_this);
+    _this.fetchTasks = _this.fetchTasks.bind(_this);
     return _this;
   }
 
-  // use componentDidMount lifecycle method to fetch tasks once component mounts
+  // fetch tasks on mount
 
 
   _createClass(ToDoList, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      this.fetchTasks();
+    }
+
+    // fetchTasks method
+
+  }, {
+    key: 'fetchTasks',
+    value: function fetchTasks() {
       var _this2 = this;
 
       fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191").then(checkStatus).then(json).then(function (response) {
         console.log(response);
         // set state of tasks array to response data
         _this2.setState({ tasks: response.tasks });
-      })
-      // error catching
-      .catch(function (error) {
+      }).catch(function (error) {
         console.error(error.message);
       });
     }
 
-    // create handleChange function
+    // handleChange method
 
   }, {
     key: 'handleChange',
@@ -69,16 +76,47 @@ var ToDoList = function (_React$Component) {
       this.setState({ new_task: event.target.value });
     }
 
-    // create handleSubmit function
+    // handleSubmit method to add new task
 
   }, {
     key: 'handleSubmit',
     value: function handleSubmit(event) {
-      // for now, do nothing
+      var _this3 = this;
+
+      // override default
       event.preventDefault();
+      // create new task from input
+      var new_task = ths.state.new_task;
+
+      new_task = new_task.trim();
+      if (!new_task) {
+        return;
+      }
+
+      // fetch request method - post to server on Submit then run fetchTasks method
+      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191", {
+        method: "POST", //*GET, POST, PUT, DELETE, etc.
+        mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
+        headers: {
+          "Content-Type": "application/json" // "Content-Type": "application/x-www-form-urlencoded" (but this is sending JSON data)
+        },
+        body: JSON.stringify({
+          task: {
+            content: new_task
+          }
+        }) // transforms data into JSON; body data type must match "Content-Type" header
+      }).then(checkStatus).then(json).then(function (data) {
+        // create new task, set to empty string
+        _this3.setState({ new_task: '' });
+        // run fetchTasks to repopulate task list with new task
+        _this3.fetchTasks();
+      }).catch(function (error) {
+        _this3.setState({ error: error.message });
+        console.log(error);
+      });
     }
 
-    // create render function
+    // render function
 
   }, {
     key: 'render',

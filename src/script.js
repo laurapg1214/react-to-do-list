@@ -22,37 +22,73 @@ class ToDoList extends React.Component {
     // bind functions
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.fetchTasks = this.fetchTasks.bind(this);
   }
 
-  // use componentDidMount lifecycle method to fetch tasks once component mounts
+  // fetch tasks on mount
   componentDidMount() {
-    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191")
-      .then(checkStatus)
-      .then(json)
-      .then((response) => {
-        console.log(response);
-        // set state of tasks array to response data
-        this.setState({tasks: response.tasks});
-      })
-      // error catching
-      .catch(error => {
-        console.error(error.message);
-      })
+    this.fetchTasks();
   }
 
-  // create handleChange function
+  // fetchTasks method
+  fetchTasks() {
+    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191")
+    .then(checkStatus)
+    .then(json)
+    .then((response) => {
+      console.log(response);
+      // set state of tasks array to response data
+      this.setState({tasks: response.tasks});
+    })
+    .catch(error => {
+      console.error(error.message);
+    })
+  }
+  
+  // handleChange method
   handleChange(event) {
     // set state of relevant new_task to input value
     this.setState({ new_task: event.target.value });
   }
 
-  // create handleSubmit function
+  // handleSubmit method to add new task
   handleSubmit(event) {
-    // for now, do nothing
+    // override default
     event.preventDefault();
-  }
+    // create new task from input
+    let { new_task } = ths.state;
+    new_task = new_task.trim();
+    if (!new_task) {
+      return;
+    }
 
-  // create render function
+    // fetch request method - post to server on Submit then run fetchTasks method
+    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191", {
+      method: "POST", //*GET, POST, PUT, DELETE, etc.
+      mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
+      headers: {
+        "Content-Type": "application/json", // "Content-Type": "application/x-www-form-urlencoded" (but this is sending JSON data)
+      },
+      body: JSON.stringify({
+        task: {
+          content: new_task
+        }
+      }), // transforms data into JSON; body data type must match "Content-Type" header
+    }).then(checkStatus)
+      .then(json)
+      .then((data) => {
+        // create new task, set to empty string
+        this.setState({new_task: ''});
+        // run fetchTasks to repopulate task list with new task
+        this.fetchTasks();
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+        console.log(error);
+      })
+   }
+
+  // render function
   render() {
     const { new_task, tasks } = this.state;
 
