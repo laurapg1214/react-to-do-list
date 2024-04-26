@@ -6,6 +6,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// check status
 var checkStatus = function checkStatus(response) {
   if (response.ok) {
     // .ok returns true if response status is 200-299
@@ -14,6 +15,7 @@ var checkStatus = function checkStatus(response) {
   throw new Error('Request was either a 404 or 500');
 };
 
+// set up json variable
 var json = function json(response) {
   return response.json();
 };
@@ -39,10 +41,28 @@ var ToDoList = function (_React$Component) {
     return _this;
   }
 
-  // create handleChange function
+  // create function to fetch tasks once component mounts
 
 
   _createClass(ToDoList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191").then(checkStatus).then(json).then(function (response) {
+        console.log(response);
+        // set state of tasks array to response return
+        _this2.setState({ tasks: response.tasks });
+      })
+      // error catching
+      .catch(function (error) {
+        console.error(error.message);
+      });
+    }
+
+    // create handleChange function
+
+  }, {
     key: 'handleChange',
     value: function handleChange(event) {
       // set state of relevant new_task to input value

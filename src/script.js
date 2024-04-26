@@ -1,3 +1,4 @@
+// check status
 const checkStatus = (response) => {
   if (response.ok) {
     // .ok returns true if response status is 200-299
@@ -6,6 +7,7 @@ const checkStatus = (response) => {
   throw new Error('Request was either a 404 or 500');
 }
 
+// set up json variable
 const json = (response) => response.json()
 
 // construct class, initialise new_task, create empty tasks array
@@ -20,6 +22,22 @@ class ToDoList extends React.Component {
     // bind functions
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  // create function to fetch tasks once component mounts
+  componentDidMount() {
+    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191")
+      .then(checkStatus)
+      .then(json)
+      .then((response) => {
+        console.log(response);
+        // set state of tasks array to response return
+        this.setState({tasks: response.tasks});
+      })
+      // error catching
+      .catch(error => {
+        console.error(error.message);
+      })
   }
 
   // create handleChange function
