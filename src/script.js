@@ -23,6 +23,7 @@ class ToDoList extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchTasks = this.fetchTasks.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
   }
 
   // fetch tasks on mount
@@ -32,7 +33,7 @@ class ToDoList extends React.Component {
 
   // fetchTasks method
   fetchTasks() {
-    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191")
+    fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191')
     .then(checkStatus)
     .then(json)
     .then((response) => {
@@ -43,6 +44,28 @@ class ToDoList extends React.Component {
     .catch(error => {
       console.error(error.message);
     })
+  }
+
+  // deleteTask method with id
+  deleteTask(id) {
+    // early return if no id supplied
+    if (!id) {
+      return; 
+    }
+
+    fetch('https://fewd-todolist-api.onrender.com/tasks/${id}?api_key=191', {
+      method: "DELETE",
+      mode: "cors",
+    }).then(checkStatus)
+      .then(json)
+      .then((data) => {
+        // fetch tasks after delete to render updated task list
+        this.fetchTasks(); 
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+        console.log(error);
+      })
   }
   
   // handleChange method
@@ -56,14 +79,14 @@ class ToDoList extends React.Component {
     // override default
     event.preventDefault();
     // create new task from input
-    let { new_task } = ths.state;
+    let { new_task } = this.state;
     new_task = new_task.trim();
     if (!new_task) {
       return;
     }
 
     // fetch request method - post to server on Submit then run fetchTasks method
-    fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191", {
+    fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191', {
       method: "POST", //*GET, POST, PUT, DELETE, etc.
       mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
       headers: {
@@ -88,7 +111,7 @@ class ToDoList extends React.Component {
       })
    }
 
-  // render function
+  // render method
   render() {
     const { new_task, tasks } = this.state;
 
@@ -100,7 +123,12 @@ class ToDoList extends React.Component {
             {// use conditional operator
             tasks.length > 0 ? tasks.map((task) => {
               // return task from Task component
-              return <Task key={task.d} task={task} />;
+              return <Task 
+                key={task.id} 
+                task={task}
+                // run deleteTask method on delete
+                onDelete={this.deleteTask}
+              />;
             }) : <p>no tasks here</p>}
             <form onSubmit={this.handleSubmit} className="form-inline my-4">
               <input 

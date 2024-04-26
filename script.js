@@ -39,6 +39,7 @@ var ToDoList = function (_React$Component) {
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.fetchTasks = _this.fetchTasks.bind(_this);
+    _this.deleteTask = _this.deleteTask.bind(_this);
     return _this;
   }
 
@@ -58,12 +59,36 @@ var ToDoList = function (_React$Component) {
     value: function fetchTasks() {
       var _this2 = this;
 
-      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191").then(checkStatus).then(json).then(function (response) {
+      fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191').then(checkStatus).then(json).then(function (response) {
         console.log(response);
         // set state of tasks array to response data
         _this2.setState({ tasks: response.tasks });
       }).catch(function (error) {
         console.error(error.message);
+      });
+    }
+
+    // deleteTask method with id
+
+  }, {
+    key: 'deleteTask',
+    value: function deleteTask(id) {
+      var _this3 = this;
+
+      // early return if no id supplied
+      if (!id) {
+        return;
+      }
+
+      fetch('https://fewd-todolist-api.onrender.com/tasks/${id}?api_key=191', {
+        method: "DELETE",
+        mode: "cors"
+      }).then(checkStatus).then(json).then(function (data) {
+        // fetch tasks after delete to render updated task list
+        _this3.fetchTasks();
+      }).catch(function (error) {
+        _this3.setState({ error: error.message });
+        console.log(error);
       });
     }
 
@@ -81,12 +106,12 @@ var ToDoList = function (_React$Component) {
   }, {
     key: 'handleSubmit',
     value: function handleSubmit(event) {
-      var _this3 = this;
+      var _this4 = this;
 
       // override default
       event.preventDefault();
       // create new task from input
-      var new_task = ths.state.new_task;
+      var new_task = this.state.new_task;
 
       new_task = new_task.trim();
       if (!new_task) {
@@ -94,7 +119,7 @@ var ToDoList = function (_React$Component) {
       }
 
       // fetch request method - post to server on Submit then run fetchTasks method
-      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191", {
+      fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191', {
         method: "POST", //*GET, POST, PUT, DELETE, etc.
         mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
         headers: {
@@ -107,20 +132,22 @@ var ToDoList = function (_React$Component) {
         }) // transforms data into JSON; body data type must match "Content-Type" header
       }).then(checkStatus).then(json).then(function (data) {
         // create new task, set to empty string
-        _this3.setState({ new_task: '' });
+        _this4.setState({ new_task: '' });
         // run fetchTasks to repopulate task list with new task
-        _this3.fetchTasks();
+        _this4.fetchTasks();
       }).catch(function (error) {
-        _this3.setState({ error: error.message });
+        _this4.setState({ error: error.message });
         console.log(error);
       });
     }
 
-    // render function
+    // render method
 
   }, {
     key: 'render',
     value: function render() {
+      var _this5 = this;
+
       var _state = this.state,
           new_task = _state.new_task,
           tasks = _state.tasks;
@@ -143,7 +170,12 @@ var ToDoList = function (_React$Component) {
             // use conditional operator
             tasks.length > 0 ? tasks.map(function (task) {
               // return task from Task component
-              return React.createElement(Task, { key: task.d, task: task });
+              return React.createElement(Task, {
+                key: task.id,
+                task: task
+                // run deleteTask method on delete
+                , onDelete: _this5.deleteTask
+              });
             }) : React.createElement(
               'p',
               null,
