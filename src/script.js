@@ -4,7 +4,7 @@ const checkStatus = (response) => {
     // .ok returns true if response status is 200-299
     return response;
   }
-  throw new Error('Request was either a 404 or 500');
+  throw new Error("Request was either a 404 or 500");
 }
 
 // set up json variable
@@ -33,7 +33,7 @@ class ToDoList extends React.Component {
 
   // fetchTasks method
   fetchTasks() {
-    fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191')
+    fetch(`https://fewd-todolist-api.onrender.com/tasks?api_key=191`)
     .then(checkStatus)
     .then(json)
     .then((response) => {
@@ -44,28 +44,6 @@ class ToDoList extends React.Component {
     .catch(error => {
       console.error(error.message);
     })
-  }
-
-  // deleteTask method with id
-  deleteTask(id) {
-    // early return if no id supplied
-    if (!id) {
-      return; 
-    }
-
-    fetch('https://fewd-todolist-api.onrender.com/tasks/${id}?api_key=191', {
-      method: "DELETE",
-      mode: "cors",
-    }).then(checkStatus)
-      .then(json)
-      .then((data) => {
-        // fetch tasks after delete to render updated task list
-        this.fetchTasks(); 
-      })
-      .catch((error) => {
-        this.setState({ error: error.message });
-        console.log(error);
-      })
   }
   
   // handleChange method
@@ -86,7 +64,7 @@ class ToDoList extends React.Component {
     }
 
     // fetch request method - post to server on Submit then run fetchTasks method
-    fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191', {
+    fetch(`https://fewd-todolist-api.onrender.com/tasks?api_key=191`, {
       method: "POST", //*GET, POST, PUT, DELETE, etc.
       mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
       headers: {
@@ -111,6 +89,28 @@ class ToDoList extends React.Component {
       })
    }
 
+  // deleteTask method with id
+  deleteTask(id) {
+    // early return if no id supplied
+    if (!id) {
+      return; 
+    }
+
+    fetch(`https://fewd-todolist-api.onrender.com/tasks/${id}?api_key=191`, {
+      method: "DELETE",
+      mode: "cors",
+    }).then(checkStatus)
+      .then(json)
+      .then((data) => {
+        // fetch tasks after delete to render updated task list
+        this.fetchTasks(); 
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+        console.log(error);
+      })
+  }
+
   // render method
   render() {
     const { new_task, tasks } = this.state;
@@ -123,12 +123,12 @@ class ToDoList extends React.Component {
             {// use conditional operator
             tasks.length > 0 ? tasks.map((task) => {
               // return task from Task component
-              return <Task 
+              return (<Task 
                 key={task.id} 
                 task={task}
                 // run deleteTask method on delete
                 onDelete={this.deleteTask}
-              />;
+              />);
             }) : <p>no tasks here</p>}
             <form onSubmit={this.handleSubmit} className="form-inline my-4">
               <input 
@@ -172,6 +172,6 @@ class Task extends React.Component {
 }
 
 // render into DOM
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = ReactDOM.createRoot(container);
 root.render(<ToDoList />);

@@ -12,7 +12,7 @@ var checkStatus = function checkStatus(response) {
     // .ok returns true if response status is 200-299
     return response;
   }
-  throw new Error('Request was either a 404 or 500');
+  throw new Error("Request was either a 404 or 500");
 };
 
 // set up json variable
@@ -47,7 +47,7 @@ var ToDoList = function (_React$Component) {
 
 
   _createClass(ToDoList, [{
-    key: 'componentDidMount',
+    key: "componentDidMount",
     value: function componentDidMount() {
       this.fetchTasks();
     }
@@ -55,11 +55,11 @@ var ToDoList = function (_React$Component) {
     // fetchTasks method
 
   }, {
-    key: 'fetchTasks',
+    key: "fetchTasks",
     value: function fetchTasks() {
       var _this2 = this;
 
-      fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191').then(checkStatus).then(json).then(function (response) {
+      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191").then(checkStatus).then(json).then(function (response) {
         console.log(response);
         // set state of tasks array to response data
         _this2.setState({ tasks: response.tasks });
@@ -68,34 +68,10 @@ var ToDoList = function (_React$Component) {
       });
     }
 
-    // deleteTask method with id
-
-  }, {
-    key: 'deleteTask',
-    value: function deleteTask(id) {
-      var _this3 = this;
-
-      // early return if no id supplied
-      if (!id) {
-        return;
-      }
-
-      fetch('https://fewd-todolist-api.onrender.com/tasks/${id}?api_key=191', {
-        method: "DELETE",
-        mode: "cors"
-      }).then(checkStatus).then(json).then(function (data) {
-        // fetch tasks after delete to render updated task list
-        _this3.fetchTasks();
-      }).catch(function (error) {
-        _this3.setState({ error: error.message });
-        console.log(error);
-      });
-    }
-
     // handleChange method
 
   }, {
-    key: 'handleChange',
+    key: "handleChange",
     value: function handleChange(event) {
       // set state of relevant new_task to input value
       this.setState({ new_task: event.target.value });
@@ -104,9 +80,9 @@ var ToDoList = function (_React$Component) {
     // handleSubmit method to add new task
 
   }, {
-    key: 'handleSubmit',
+    key: "handleSubmit",
     value: function handleSubmit(event) {
-      var _this4 = this;
+      var _this3 = this;
 
       // override default
       event.preventDefault();
@@ -119,7 +95,7 @@ var ToDoList = function (_React$Component) {
       }
 
       // fetch request method - post to server on Submit then run fetchTasks method
-      fetch('https://fewd-todolist-api.onrender.com/tasks?api_key=191', {
+      fetch("https://fewd-todolist-api.onrender.com/tasks?api_key=191", {
         method: "POST", //*GET, POST, PUT, DELETE, etc.
         mode: "cors", // cors (cross origin resource sharing), *same-origin, etc.
         headers: {
@@ -132,8 +108,32 @@ var ToDoList = function (_React$Component) {
         }) // transforms data into JSON; body data type must match "Content-Type" header
       }).then(checkStatus).then(json).then(function (data) {
         // create new task, set to empty string
-        _this4.setState({ new_task: '' });
+        _this3.setState({ new_task: '' });
         // run fetchTasks to repopulate task list with new task
+        _this3.fetchTasks();
+      }).catch(function (error) {
+        _this3.setState({ error: error.message });
+        console.log(error);
+      });
+    }
+
+    // deleteTask method with id
+
+  }, {
+    key: "deleteTask",
+    value: function deleteTask(id) {
+      var _this4 = this;
+
+      // early return if no id supplied
+      if (!id) {
+        return;
+      }
+
+      fetch("https://fewd-todolist-api.onrender.com/tasks/" + id + "?api_key=191", {
+        method: "DELETE",
+        mode: "cors"
+      }).then(checkStatus).then(json).then(function (data) {
+        // fetch tasks after delete to render updated task list
         _this4.fetchTasks();
       }).catch(function (error) {
         _this4.setState({ error: error.message });
@@ -144,7 +144,7 @@ var ToDoList = function (_React$Component) {
     // render method
 
   }, {
-    key: 'render',
+    key: "render",
     value: function render() {
       var _this5 = this;
 
@@ -154,18 +154,18 @@ var ToDoList = function (_React$Component) {
 
 
       return React.createElement(
-        'div',
-        { className: 'container' },
+        "div",
+        { className: "container" },
         React.createElement(
-          'div',
-          { className: 'row' },
+          "div",
+          { className: "row" },
           React.createElement(
-            'div',
-            { className: 'col-12' },
+            "div",
+            { className: "col-12" },
             React.createElement(
-              'h2',
-              { className: 'mb-3' },
-              'To Do List'
+              "h2",
+              { className: "mb-3" },
+              "To Do List"
             ),
             // use conditional operator
             tasks.length > 0 ? tasks.map(function (task) {
@@ -177,24 +177,24 @@ var ToDoList = function (_React$Component) {
                 , onDelete: _this5.deleteTask
               });
             }) : React.createElement(
-              'p',
+              "p",
               null,
-              'no tasks here'
+              "no tasks here"
             ),
             React.createElement(
-              'form',
-              { onSubmit: this.handleSubmit, className: 'form-inline my-4' },
-              React.createElement('input', {
-                type: 'text',
-                className: 'form-control mr-sm-2 mb-2',
-                placeholder: 'new task',
+              "form",
+              { onSubmit: this.handleSubmit, className: "form-inline my-4" },
+              React.createElement("input", {
+                type: "text",
+                className: "form-control mr-sm-2 mb-2",
+                placeholder: "new task",
                 value: new_task,
                 onChange: this.handleChange
               }),
               React.createElement(
-                'button',
-                { type: 'submit', className: 'btn btn-primary mb-2' },
-                'Submit'
+                "button",
+                { type: "submit", className: "btn btn-primary mb-2" },
+                "Submit"
               )
             )
           )
@@ -219,7 +219,7 @@ var Task = function (_React$Component2) {
   }
 
   _createClass(Task, [{
-    key: 'render',
+    key: "render",
     value: function render() {
       var _props = this.props,
           task = _props.task,
@@ -232,25 +232,25 @@ var Task = function (_React$Component2) {
       // return paragraph to render task content, delete button, and completion checkbox
 
       return React.createElement(
-        'div',
-        { className: 'row mb-1' },
+        "div",
+        { className: "row mb-1" },
         React.createElement(
-          'p',
-          { className: 'col' },
+          "p",
+          { className: "col" },
           content
         ),
         React.createElement(
-          'button',
+          "button",
           {
             onClick: function onClick() {
               return onDelete(id);
             }
           },
-          'Delete'
+          "Delete"
         ),
-        React.createElement('input', {
-          className: 'd-inline-block mt-2',
-          type: 'checkbox',
+        React.createElement("input", {
+          className: "d-inline-block mt-2",
+          type: "checkbox",
           onChange: function onChange() {
             return onComplete(id, completed);
           },
@@ -266,6 +266,6 @@ var Task = function (_React$Component2) {
 // render into DOM
 
 
-var container = document.getElementById('root');
+var container = document.getElementById("root");
 var root = ReactDOM.createRoot(container);
 root.render(React.createElement(ToDoList, null));
