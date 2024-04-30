@@ -40,6 +40,7 @@ var ToDoList = function (_React$Component) {
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.fetchTasks = _this.fetchTasks.bind(_this);
     _this.deleteTask = _this.deleteTask.bind(_this);
+    _this.toggleComplete = _this.toggleComplete.bind(_this);
     return _this;
   }
 
@@ -141,12 +142,38 @@ var ToDoList = function (_React$Component) {
       });
     }
 
+    // toggleComplete method
+
+  }, {
+    key: "toggleComplete",
+    value: function toggleComplete(id, completed) {
+      var _this5 = this;
+
+      // early return if no id 
+      if (!id) {
+        return;
+      }
+      // use conditional operator for newState var
+      var newState = completed ? "active" : "complete";
+
+      // fetch tasks to update task list with completed status
+      fetch("https://fewd-todolist-api.onrender.com/tasks/" + id + "/mark_" + newState + "?api_key=191", {
+        method: "PUT",
+        mode: "cors"
+      }).then(checkStatus).then(json).then(function (data) {
+        _this5.fetchTasks();
+      }).catch(function (error) {
+        _this5.setState({ error: error.message });
+        console.log(error);
+      });
+    }
+
     // render method
 
   }, {
     key: "render",
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       var _state = this.state,
           new_task = _state.new_task,
@@ -174,7 +201,9 @@ var ToDoList = function (_React$Component) {
                 key: task.id,
                 task: task
                 // run deleteTask method on delete
-                , onDelete: _this5.deleteTask
+                , onDelete: _this6.deleteTask
+                // run toggleComplete method on checkbox tick
+                , onComplete: _this6.toggleComplete
               });
             }) : React.createElement(
               "p",
